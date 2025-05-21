@@ -25,13 +25,45 @@
   <script async src="https://cse.google.com/cse.js?cx=e500c3a7a523b49df"></script>
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z8ZKHC2WCZ"></script>
-  <script>
+
+<script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
   
     gtag('config', 'G-Z8ZKHC2WCZ');
   </script>
+
+  <!-- Search logic -->
+  <script>
+    function performSearch() {
+      const reelsChecked = document.getElementById('reelsCheckbox').checked;
+      const picturesChecked = document.getElementById('picturesCheckbox').checked;
+      const query = document.getElementById('searchBox').value.trim();
+
+      let siteFilters = [];
+
+      if (reelsChecked) siteFilters.push('site:instagram.com/reel');
+      if (picturesChecked) siteFilters.push('site:instagram.com/p');
+
+      let fullQuery = '';
+
+      if (siteFilters.length > 0) {
+        fullQuery = `${siteFilters.join(' OR ')} ${query}`;
+      } else {
+        fullQuery = query; // fallback if nothing is checked
+      }
+
+      const searchBox = document.querySelector('input.gsc-input');
+      const searchButton = document.querySelector('button.gsc-search-button');
+
+      if (searchBox && searchButton) {
+        searchBox.value = fullQuery;
+        searchButton.click();
+      }
+    }
+  </script>
+
   <style>
     body {
       font-family: "Instagram Sans", "Helvetica Neue", Helvetica, Roboto, Arial, sans-serif;
@@ -77,9 +109,18 @@
     <div class="box">
       <h1>Reels Finder</h1>
     </div>
+    
     <div class="box">
       <small class="subtitle">Because Instagram Reels Search Sucks</small>
     </div>
+
+    <div class="controls">
+      <label><input type="checkbox" id="reelsCheckbox" checked> Reels</label>
+      <label><input type="checkbox" id="picturesCheckbox" checked> Pictures</label>
+      <input type="text" id="searchBox" placeholder="Search Instagram content">
+      <button onclick="performSearch()">Search</button>
+    </div>
+
     <div class="gcse-search"></div>
   </div>
 </body>
