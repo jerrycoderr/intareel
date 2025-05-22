@@ -22,16 +22,74 @@
   <meta property="twitter:image"
     content="https://raw.githubusercontent.com/iSatishYadav/reels-finder/main/Reels_Finder_Small.png">
   <title>Reels Finder — Find Instagram Reels</title>
-  <script async src="https://cse.google.com/cse.js?cx=e500c3a7a523b49df"></script>
+
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z8ZKHC2WCZ"></script>
-  <script>
+
+<script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
   
     gtag('config', 'G-Z8ZKHC2WCZ');
   </script>
+
+  <!-- Search logic -->
+  <script>
+
+    // Dynamically add the CSE script with selected CX
+    function getSelectedCX() {
+      const reels = document.getElementById('reelsCheckbox').checked;
+      const pictures = document.getElementById('picturesCheckbox').checked;
+
+      if (reels && !pictures) return 'b601844c47a6a4027'; // Only Reels
+      if (!reels && pictures) return '4447b8684980f4030'; // Only Pictures
+      if (reels && pictures) return '6393d36f3e7e445ea';  // If you created a combined engine
+
+      return null;
+    }
+
+    function loadSearch(){
+
+      const query = document.getElementById("searchBox").value.trim();
+      const cx = getSelectedCX();
+
+      if (!cx) {
+        alert("Please select at least one content type.");
+        return;
+      }
+
+      // Clear previous search engine instance
+      document.getElementById("search-container").innerHTML = "";
+      const oldScript = document.getElementById("cse-script");
+      if (oldScript) oldScript.remove();
+
+      // Insert new search results container
+      const resultsDiv = document.createElement("div");
+      resultsDiv.className = "gcse-searchresults-only";
+      resultsDiv.setAttribute("data-queryParameterName", "q");
+      document.getElementById("search-container").appendChild(resultsDiv);
+
+      // Dynamically insert the CSE script
+      const script = document.createElement("script");
+      script.id = "cse-script";
+      script.async = true;
+      script.src = `https://cse.google.com/cse.js?cx=${cx}`;
+      document.body.appendChild(script);
+
+      // Wait for engine to initialize, then trigger the search
+      setTimeout(() => {
+        const input = document.querySelector("input");
+        const button = document.querySelector("button");
+        if (input && button) {
+          input.value = query;
+          button.click();
+        }
+      }, 1000);
+    }
+
+  </script>
+
   <style>
     body {
       font-family: "Instagram Sans", "Helvetica Neue", Helvetica, Roboto, Arial, sans-serif;
@@ -69,18 +127,99 @@
       font-style: italic;
       color: gray;
     }
+    /* .full-width {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+    } */
+
+    .controls {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+
+    .checkbox-group {
+      display: flex;
+      gap: 10px;
+      flex: 1;
+      min-width: 150px;
+    }
+
+    .search-input {
+      flex: 2;
+      min-width: 200px;
+    }
+
+    .search-input input {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+
+    .search-button {
+      flex: 1;
+      min-width: 100px;
+      padding: 10px;
+
+    }
+
+    .search-button button {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .search-button button:hover {
+      background-color: #0056b3;
+    }
+
   </style>
 </head>
 
+
 <body>
+
+  <!-- Results will appear here -->
+  <div id="search-container"></div>
+  
   <div class="container">
     <div class="box">
       <h1>Reels Finder</h1>
     </div>
+    
     <div class="box">
       <small class="subtitle">Because Instagram Reels Search Sucks</small>
     </div>
-    <div class="gcse-search"></div>
+
+    <div class="controls">
+      <div class="checkbox-group">
+        <label><input type="checkbox" id="reelsCheckbox" checked> Reels</label>
+        <label><input type="checkbox" id="picturesCheckbox" checked> Pictures</label>
+      </div>
+      
+      <div class="search-input">
+        <input type="text" id="searchBox" placeholder="Search Instagram content">
+      </div>
+
+      <div class="search-button">
+        <button onclick="loadSearch()">Search</button>
+      </div>
+
+    </div>
+
+
+
   </div>
 </body>
 
