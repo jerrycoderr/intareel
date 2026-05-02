@@ -77,11 +77,59 @@
     <div class="box">
       <h1>Reels Finder</h1>
     </div>
+
     <div class="box">
       <small class="subtitle">Because Instagram Reels Search Sucks</small>
     </div>
+
+    <!-- Your Search -->
+    <input id="mySearch" placeholder="Search reels..." />
+    <div id="apiResults"></div>
+
+    <!-- Google CSE -->
     <div class="gcse-search"></div>
   </div>
-</body>
 
+  <script>
+    async function fetchAPI(q) {
+      const res = await fetch(`/api?q=${encodeURIComponent(q)}`);
+      const data = await res.json();
+
+      const container = document.getElementById("apiResults");
+      container.innerHTML = "";
+
+      if (!data.result || data.result.length === 0) {
+        container.innerHTML = "<p>No API results</p>";
+        return;
+      }
+
+      data.result.forEach(item => {
+        container.innerHTML += `
+          <div style="padding:10px;border-bottom:1px solid #ccc">
+            <a href="${item.url}" target="_blank">${item.title}</a>
+            <p>${item.snippet || ""}</p>
+          </div>
+        `;
+      });
+    }
+
+    document.getElementById("mySearch").addEventListener("change", e => {
+      const q = e.target.value;
+
+      // Your API
+      fetchAPI(q);
+
+      // Trigger Google CSE search also
+      const interval = setInterval(() => {
+        const gscInput = document.querySelector("input.gsc-input");
+
+        if (gscInput) {
+          gscInput.value = q;
+          gscInput.dispatchEvent(new Event("input"));
+          clearInterval(interval);
+        }
+      }, 300);
+    });
+  </script>
+</body>
 </html>
